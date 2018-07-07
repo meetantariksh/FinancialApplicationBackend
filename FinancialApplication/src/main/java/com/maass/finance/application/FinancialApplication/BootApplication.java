@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maass.finance.application.FinancialApplication.BootApplication;
 
-@ComponentScan({"com.maass.finance.application"})
+@ComponentScan({"com.maass.finance.application.controller"})
 @SpringBootApplication
 @RestController
 @EnableAutoConfiguration

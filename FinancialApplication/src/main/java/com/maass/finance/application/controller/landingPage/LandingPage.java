@@ -1,4 +1,4 @@
-package com.maass.finance.application.landingPage;
+package com.maass.finance.application.controller.landingPage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;

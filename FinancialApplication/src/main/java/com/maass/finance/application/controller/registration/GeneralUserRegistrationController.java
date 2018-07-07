@@ -1,4 +1,4 @@
-package com.maass.finance.application.registration;
+package com.maass.finance.application.controller.registration;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class GeneralUserRegistrationController {
 			value = "/verifyGeneralUserRegistration",
 			method = {RequestMethod.POST, RequestMethod.GET}
 			)
-	public GeneralUserRegistrationBean getNewsHeadlines(@RequestBody Map<String, Object> payload){
+	public GeneralUserRegistrationBean getUserRegistrationData(@RequestBody Map<String, Object> payload){
 		GeneralUserRegistrationBean userRegistrationBean = null;
 		try{
 			System.out.println(payload);
