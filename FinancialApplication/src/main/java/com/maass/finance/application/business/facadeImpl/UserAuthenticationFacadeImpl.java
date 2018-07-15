@@ -1,7 +1,9 @@
 package com.maass.finance.application.business.facadeImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.maass.finance.application.beans.authentication.InitiateAuthenticationRequest;
 import com.maass.finance.application.beans.authentication.InitiateAuthenticationResponse;
 import com.maass.finance.application.beans.exceptions.ApplicationException;
 import com.maass.finance.application.beans.exceptions.BusinessException;
@@ -9,16 +11,17 @@ import com.maass.finance.application.business.facade.UserAuthenticationFacade;
 import com.maass.finance.application.business.service.UserAuthenticationBusinessService;
 import com.maass.finance.application.helpers.ExceptionResolver;
 
+@Service
 public class UserAuthenticationFacadeImpl implements UserAuthenticationFacade {
 
 	@Autowired
 	private UserAuthenticationBusinessService userAuthenticationBusinessService;
 	
-	public InitiateAuthenticationResponse initiateAuthentication(String token) {
+	public InitiateAuthenticationResponse initiateAuthentication(InitiateAuthenticationRequest initiateAuthenticationRequest) {
 		InitiateAuthenticationResponse initiateAuthenticationResponse = null;
 		try {
-			if(token != null && !token.equals("")) {
-				initiateAuthenticationResponse = userAuthenticationBusinessService.initiateAuthentication(token);
+			if(initiateAuthenticationRequest != null) {
+				initiateAuthenticationResponse = userAuthenticationBusinessService.initiateAuthentication(initiateAuthenticationRequest);
 			}else {
 				initiateAuthenticationResponse = new InitiateAuthenticationResponse();
 				initiateAuthenticationResponse.setHttpCode(ExceptionResolver.MANDATORY_DATA_NOT_RECIEVED.getHttpCode());
