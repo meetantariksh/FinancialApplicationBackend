@@ -1,6 +1,14 @@
 package com.maass.finance.application.business.serviceImpl;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maass.finance.application.beans.authentication.InitiateAuthenticationRequest;
@@ -8,7 +16,9 @@ import com.maass.finance.application.beans.authentication.InitiateAuthentication
 import com.maass.finance.application.beans.exceptions.ApplicationException;
 import com.maass.finance.application.beans.exceptions.BusinessException;
 import com.maass.finance.application.business.service.UserAuthenticationBusinessService;
+import com.maass.finance.application.collections.InitiateAuthenticationCollection;
 import com.maass.finance.application.collections.UserProfileCollection;
+import com.maass.finance.application.dao.InitiateAuthenticationDAO;
 import com.maass.finance.application.dao.UserProfileDAO;
 import com.maass.finance.application.helpers.ExceptionResolver;
 import com.maass.finance.application.helpers.StringHandlers;
@@ -19,6 +29,12 @@ public class UserAuthenticationBusinessServiceImpl implements
 	
 	@Autowired
 	private UserProfileDAO userProfileDAO;
+	
+	@Autowired
+	private InitiateAuthenticationDAO initiateAuthenticationDAO;
+	
+	@Value("${initial.authentication.token.constant}")
+	private String authenticationTokenConstant;
 	
 	public InitiateAuthenticationResponse initiateAuthentication(InitiateAuthenticationRequest initiateAuthenticationRequest) throws BusinessException, ApplicationException{
 		
@@ -33,7 +49,32 @@ public class UserAuthenticationBusinessServiceImpl implements
 				if(userProfile != null) {
 					System.out.println("User profile populated...");
 					initiateAuthenticationResponse = new InitiateAuthenticationResponse();
-					initiateAuthenticationResponse.setInitialAuthenticationToken("Token-Will-Be-Generated");
+					InitiateAuthenticationCollection initiateAuthenticationCollection = new InitiateAuthenticationCollection();
+					String access_token = authenticationTokenConstant + Math.random() + "##$$" + userProfile.getUser_id();
+					Date currentDate = new Date();
+					initiateAuthenticationCollection.setAccess_token(access_token);
+					initiateAuthenticationCollection.setAuth0_subject(initiateAuthenticationRequest.getSubject());
+					initiateAuthenticationCollection.setAuth0_token(initiateAuthenticationRequest.getToken());
+					initiateAuthenticationCollection.setEmail(initiateAuthenticationRequest.getEmail());
+					initiateAuthenticationCollection.setFirst_name(userProfile.getFirst_name());
+					initiateAuthenticationCollection.setLast_name(userProfile.getLast_name());
+					initiateAuthenticationCollection.setUser_id(userProfile.getUser_id());
+					initiateAuthenticationCollection.setToken_last_update_time(currentDate.getTime());
+					if(initiateAuthenticationDAO.registerInitiateAuthenticationRequest(initiateAuthenticationCollection)) {
+						Map<String, Object> claims = new HashMap<String, Object>();
+						claims.put("email", userProfile.getEmail());
+						claims.put("access_token", access_token);
+						claims.put("auth0_subject", initiateAuthenticationRequest.getSubject());
+						claims.put("auth0_token", initiateAuthenticationRequest.getToken());
+						String jwt = Jwts.builder()
+								.setSubject("INIT_AUTH_TOK")
+								.setExpiration(new Date(currentDate.getTime() * 5 * 60 * 1000))
+								.addClaims(claims)
+								.signWith(SignatureAlgorithm.HS256, authenticationTokenConstant)
+								.compact();
+						System.out.println(jwt);
+						initiateAuthenticationResponse.setInitialAuthenticationToken(jwt);
+					}
 				}else {
 					throw (new BusinessException("User Profile not found.", 
 							ExceptionResolver.USER_PROFILE_NOT_FOUND.getMessage(), 

@@ -6,12 +6,12 @@ public class StringHandlers {
 		boolean result = false;
 		if(inputString != null) {
 			if((inputString.trim()).equals("")) {
-				result = false;
-			}else {
 				result = true;
+			}else {
+				result = false;
 			}
 		}else {
-			result = false;
+			result = true;
 		}
 		return result;
 	}

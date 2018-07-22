@@ -1,12 +1,13 @@
 package com.maass.finance.application.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user_profile")
 
 public class UserProfileCollection {
-	@Id
+	@Id ObjectId databaseId;
 	int id;
 
 	private String first_name = null;
