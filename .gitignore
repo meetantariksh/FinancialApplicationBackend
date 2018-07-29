@@ -7,3 +7,5 @@ FinancialApplication/.settings/org.eclipse.jdt.core.prefs
 FinancialApplication/.settings/org.eclipse.jdt.core.prefs
 FinancialApplication/.classpath
 FinancialApplication/.settings/org.eclipse.jdt.core.prefs
+FinancialApplication/src/main/resources/application.properties
+FinancialApplication/src/main/resources/application.properties

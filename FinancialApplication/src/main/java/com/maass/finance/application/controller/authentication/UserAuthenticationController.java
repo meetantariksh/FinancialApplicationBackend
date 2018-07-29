@@ -3,12 +3,14 @@ package com.maass.finance.application.controller.authentication;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maass.finance.application.beans.authentication.AuthenticationDetailsResponse;
 import com.maass.finance.application.beans.authentication.InitiateAuthenticationRequest;
 import com.maass.finance.application.beans.authentication.InitiateAuthenticationResponse;
 import com.maass.finance.application.business.facade.UserAuthenticationFacade;
@@ -45,5 +47,25 @@ public class UserAuthenticationController {
 			initiateAuthenticationResponse.setMessage("Internal Server Error");
 		}
 		return initiateAuthenticationResponse;
-	}	
+	}
+	
+	@RequestMapping(
+			value = "/fetchAuthenticationDetails",
+			method = {RequestMethod.GET}
+			)
+	public AuthenticationDetailsResponse fetchAuthenticationDetails(Authentication authentication) {
+		AuthenticationDetailsResponse authenticationDetailsResponse = null;
+		try {
+			authenticationDetailsResponse = userAuthenticationFacade.getSeccondFactorAuthentication(authentication);
+		}catch(Exception exception) {
+			System.out.println("Exception occured in initiate authentication method");
+			exception.printStackTrace();
+			authenticationDetailsResponse = new AuthenticationDetailsResponse();
+			authenticationDetailsResponse.setHttpCode(500);
+			authenticationDetailsResponse.setBussinessFaultCode("BUS-CONTROL-500");
+			authenticationDetailsResponse.setBusinessMessage("Application Faild to process the request");
+			authenticationDetailsResponse.setMessage("Internal Server Error");
+		}
+		return authenticationDetailsResponse;
+	}
 }
